@@ -1,4 +1,3 @@
-````markdown
 <h1 align="center">💻 Vemana Institute of Technology Fee Management System</h1>
 
 <p align="center">
@@ -13,15 +12,15 @@
 
 ---
 
-## ✨ Overview  
-The **Vemana Institute of Technology Fee Management System** is a web-based platform built with **PHP and MySQL**, designed to simplify fee management for students and administrators.  
-It provides an **Admin Dashboard** to monitor payments and student data, along with a **Student Portal** for checking dues, fee history, and more — all in a smooth, responsive interface.
+## ✨ Overview
+
+The **Vemana Institute of Technology Fee Management System** is a web-based platform built with **PHP and MySQL**, designed to simplify fee management for students and administrators. It provides an **Admin Dashboard** to monitor payments and student data, along with a **Student Portal** for checking dues, fee history, and more — all in a smooth, responsive interface.
 
 ---
 
-## 🚀 Features  
+## 🚀 Features
 
-### 👨‍💼 Admin Panel  
+### 👨‍💼 Admin Panel
 - 🔐 Secure Admin Login  
 - 📊 Dashboard Overview (Total Students, Fees Collected)  
 - ➕ Add & Manage Students  
@@ -29,7 +28,7 @@ It provides an **Admin Dashboard** to monitor payments and student data, along w
 - 📤 Export Finance CSV  
 - 📈 Analytics Dashboard  
 
-### 🎓 Student Portal  
+### 🎓 Student Portal
 - 🔑 Student Login  
 - 👤 Profile Overview (Name, Branch, Year)  
 - 💸 Check Total Fees & Dues  
@@ -38,7 +37,7 @@ It provides an **Admin Dashboard** to monitor payments and student data, along w
 
 ---
 
-## 🛠️ Tech Stack  
+## 🛠️ Tech Stack
 
 | Layer | Technology |
 |-------|-------------|
@@ -49,12 +48,11 @@ It provides an **Admin Dashboard** to monitor payments and student data, along w
 
 ---
 
-## ⚙️ Installation Guide  
+## ⚙️ Installation Guide
 
-### 1️⃣ Clone this Repository  
+### 1️⃣ Clone this Repository
 ```bash
 git clone https://github.com/your-username/vemana-fee-management-system.git
-````
 
 ### 2️⃣ Move Project to XAMPP Directory
 
