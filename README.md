@@ -122,7 +122,7 @@ vemana-fee-management-system/
 **Sandeep Singh**
 🎓 B.E. in Computer Science (Data Science)
 🏫 Vemana Institute of Technology, Bengaluru
-🌐 [GitHub Profile](https://github.com/your-username)
+🌐 [GitHub Profile](https://github.com/sandy191020)
 
 ---
 
