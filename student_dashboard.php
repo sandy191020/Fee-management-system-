@@ -58,7 +58,7 @@ body {
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link btn btn-theme text-white me-2" href="student_pay.php">Pay Fees</a></li>
-                <li class="nav-item"><a class="nav-link btn btn-danger text-white" href="logout_admin.php">Logout</a></li>
+                <li class="nav-item"><a class="nav-link btn btn-danger text-white" href="logout.php">Logout</a></li>
             </ul>
         </div>
     </div>
