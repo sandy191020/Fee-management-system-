@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIT Fee Management System</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        border: "hsl(var(--border))",
+                        input: "hsl(var(--input))",
+                        ring: "hsl(var(--ring))",
+                        background: "hsl(var(--background))",
+                        foreground: "hsl(var(--foreground))",
+                        primary: {
+                            DEFAULT: "#0f172a", // Slate 900
+                            foreground: "#f8fafc", // Slate 50
+                        },
+                        secondary: {
+                            DEFAULT: "#f1f5f9", // Slate 100
+                            foreground: "#0f172a",
+                        },
+                        accent: {
+                            DEFAULT: "#FF5722", // Orange from your reference
+                            glow: "rgba(255, 87, 34, 0.15)" 
+                        }
+                    },
+                    animation: {
+                        "accordion-down": "accordion-down 0.2s ease-out",
+                        "accordion-up": "accordion-up 0.2s ease-out",
+                        "blob": "blob 7s infinite",
+                        "fade-in-up": "fadeInUp 0.8s ease-out forwards",
+                    },
+                    keyframes: {
+                        blob: {
+                            "0%": { transform: "translate(0px, 0px) scale(1)" },
+                            "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+                            "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+                            "100%": { transform: "translate(0px, 0px) scale(1)" },
+                        },
+                        fadeInUp: {
+                            "0%": { opacity: "0", transform: "translateY(20px)" },
+                            "100%": { opacity: "1", transform: "translateY(0)" },
+                        }
+                    },
+                },
+            },
+        }
+    </script>
+
+    <style>
+        :root {
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+        }
+        
+        body {
+            background-color: #ffffff;
+            color: #020817;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #ea580c, #d946ef, #ea580c); /* Orange -> Pink -> Orange */
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textShine 3s linear infinite;
+        }
+
+        @keyframes textShine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        .hero-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(249,115,22,0.08) 0%, rgba(255,255,255,0) 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Card Hover Effects */
+        .feature-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+            border-color: #cbd5e1;
+        }
+
+        /* Smooth Reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Dashboard Mockup Specifics */
+        .mock-table th { font-weight: 500; color: #64748b; font-size: 0.75rem; padding-bottom: 0.5rem; text-align: left; }
+        .mock-table td { padding: 0.75rem 0; border-bottom: 1px solid #f1f5f9; font-size: 0.875rem; color: #334155; }
+        .mock-table tr:last-child td { border-bottom: none; }
+    </style>
+</head>
+<body class="relative overflow-x-hidden selection:bg-orange-100 selection:text-orange-900">
+
+    <!-- BACKGROUND BLOBS -->
+    <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-orange-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob"></div>
+        <div class="absolute top-0 right-1/4 w-96 h-96 bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-32 left-1/3 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <!-- NAVIGATION -->
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-pink-600 rounded-lg flex items-center justify-center text-white font-bold mr-2">
+                        V
+                    </div>
+                    <span class="font-bold text-lg tracking-tight text-slate-900">VIT Fee Management System</span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#features" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Features</a>
+                    <a href="#techstack" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Tech Stack</a>
+                    
+                    <div class="flex items-center space-x-4 ml-4 pl-4 border-l border-slate-200">
+                        <a href = "http://localhost/fee_payemnt/" class="w-full mt-4 bg-slate-900 text-white py-2 rounded-lg font-medium">Log In</a>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-slate-600 hover:text-slate-900 focus:outline-none">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-slate-100 px-4 py-4 space-y-3 absolute w-full shadow-xl">
+            <a href="#features" class="block text-slate-600 font-medium hover:text-orange-600">Features</a>
+            <a href="#techstack" class="block text-slate-600 font-medium hover:text-orange-600">Tech Stack</a>
+            <a href = "http://localhost/fee_payemnt/" class="w-full mt-4 bg-slate-900 text-white py-2 rounded-lg font-medium">Log In</a>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden text-center px-4">
+        <div class="hero-glow"></div>
+        
+        <div class="max-w-4xl mx-auto relative z-10 opacity-0 animate-fade-in-up" style="animation-delay: 0.1s;">
+            <!-- Badge -->
+            <div class="inline-flex items-center px-3 py-1 rounded-full border border-slate-200 bg-white/50 backdrop-blur-sm mb-8 shadow-sm hover:border-orange-200 transition-colors cursor-default">
+                <span class="flex h-2 w-2 rounded-full bg-orange-500 mr-2"></span>
+                <span class="text-xs font-medium text-slate-600 uppercase tracking-wide">System v1.0 Live</span>
+            </div>
+
+            <!-- Heading -->
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 mb-6 leading-tight">
+                Manage Fees with <br class="hidden md:block" />
+                <span class="text-gradient">Intelligence & Ease</span>
+            </h1>
+
+            <!-- Subtext -->
+            <p class="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto mb-10 leading-relaxed">
+                The VIT Fee Management System simplifies tracking records, monitoring payments, and managing student data—all in one secure platform.
+            </p>
+
+            <!-- Buttons -->
+            <div class="flex flex-col sm:flex-row justify-center gap-4 items-center">
+                <button class="group relative px-8 py-3.5 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold text-sm transition-all shadow-[0_0_20px_-5px_rgba(234,88,12,0.5)] hover:shadow-[0_0_25px_-5px_rgba(234,88,12,0.6)] flex items-center">
+                    Student Portal
+                    <i data-lucide="arrow-right" class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </button>
+                <button class="px-8 py-3.5 bg-white text-slate-700 border border-slate-200 hover:border-slate-400 rounded-lg font-semibold text-sm transition-all hover:bg-slate-50 flex items-center">
+                    <i data-lucide="layout-dashboard" class="w-4 h-4 mr-2 text-slate-500"></i>
+                    Admin Dashboard
+                </button>
+            </div>
+        </div>
+
+        <!-- Hero Image / Dashboard Preview Mockup -->
+        <div class="mt-16 relative max-w-5xl mx-auto opacity-0 animate-fade-in-up" style="animation-delay: 0.4s;">
+            <div class="rounded-xl bg-slate-900/5 p-2 ring-1 ring-inset ring-slate-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
+                <div class="bg-white rounded-lg shadow-2xl border border-slate-200 overflow-hidden relative aspect-[16/9] flex text-left">
+                    
+                    <!-- Mock Sidebar -->
+                    <div class="w-64 bg-slate-50 border-r border-slate-200 hidden md:flex flex-col p-4 space-y-6">
+                        <div class="flex items-center space-x-2 text-slate-900 font-bold px-2">
+                            <div class="w-6 h-6 bg-orange-500 rounded flex items-center justify-center text-white text-xs">V</div>
+                            <span>Dashboard</span>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="px-3 py-2 bg-white border border-slate-200 rounded-md text-sm font-medium text-slate-900 flex items-center shadow-sm">
+                                <i data-lucide="layout-dashboard" class="w-4 h-4 mr-2 text-orange-500"></i> Overview
+                            </div>
+                            <div class="px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-100 rounded-md flex items-center cursor-pointer">
+                                <i data-lucide="users" class="w-4 h-4 mr-2"></i> Students
+                            </div>
+                            <div class="px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-100 rounded-md flex items-center cursor-pointer">
+                                <i data-lucide="credit-card" class="w-4 h-4 mr-2"></i> Payments
+                            </div>
+                            <div class="px-3 py-2 text-sm font-medium text-slate-500 hover:bg-slate-100 rounded-md flex items-center cursor-pointer">
+                                <i data-lucide="settings" class="w-4 h-4 mr-2"></i> Settings
+                            </div>
+                        </div>
+                        <div class="mt-auto">
+                             <div class="h-24 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-3 text-white">
+                                 <div class="text-xs opacity-70">Server Status</div>
+                                 <div class="text-sm font-bold mt-1 flex items-center"><div class="w-2 h-2 bg-green-400 rounded-full mr-2"></div> Online</div>
+                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Mock Main Content -->
+                    <div class="flex-1 flex flex-col bg-slate-50/30">
+                        <!-- Header -->
+                        <div class="h-14 border-b border-slate-200 bg-white flex items-center justify-between px-6">
+                            <span class="font-semibold text-slate-700">Financial Overview</span>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center">
+                                    <i data-lucide="bell" class="w-4 h-4 text-slate-500"></i>
+                                </div>
+                                <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700 font-bold text-xs border border-indigo-200">
+                                    AD
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dashboard Content -->
+                        <div class="p-6 overflow-hidden flex-1">
+                            <!-- Stats Grid -->
+                            <div class="grid grid-cols-3 gap-4 mb-6">
+                                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                    <div class="text-xs font-medium text-slate-500 uppercase">Total Students</div>
+                                    <div class="text-2xl font-bold text-slate-900 mt-1">1,248</div>
+                                    <div class="text-xs text-green-600 mt-2 flex items-center">
+                                        <i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> +12% this month
+                                    </div>
+                                </div>
+                                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                    <div class="text-xs font-medium text-slate-500 uppercase">Collected Fees</div>
+                                    <div class="text-2xl font-bold text-slate-900 mt-1">₹45.2L</div>
+                                    <div class="text-xs text-green-600 mt-2 flex items-center">
+                                        <i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> +8% vs last sem
+                                    </div>
+                                </div>
+                                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                                    <div class="text-xs font-medium text-slate-500 uppercase">Pending Dues</div>
+                                    <div class="text-2xl font-bold text-slate-900 mt-1">₹8.4L</div>
+                                    <div class="text-xs text-red-500 mt-2 flex items-center">
+                                        <i data-lucide="alert-circle" class="w-3 h-3 mr-1"></i> 145 Students
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recent Transactions Table -->
+                            <div class="bg-white rounded-xl border border-slate-200 shadow-sm flex-1 h-full p-4">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h4 class="font-semibold text-slate-800 text-sm">Recent Transactions</h4>
+                                    <button class="text-xs text-blue-600 font-medium">View All</button>
+                                </div>
+                                <table class="w-full mock-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Student ID</th>
+                                            <th>Name</th>
+                                            <th>Date</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="font-mono">#1VI23CD065</td>
+                                            <td>Aisha</td>
+                                            <td>Oct 24, 2025</td>
+                                            <td>₹45,000</td>
+                                            <td><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-medium">Paid</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-mono">#1VI23CD069</td>
+                                            <td>Sneha</td>
+                                            <td>Oct 23, 2025</td>
+                                            <td>₹12,500</td>
+                                            <td><span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-medium">Paid</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-mono">#1VI23CD003</td>
+                                            <td>Ishika</td>
+                                            <td>Oct 23, 2025</td>
+                                            <td>₹22,000</td>
+                                            <td><span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-xs font-medium">Pending</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Overlay Text (Removed to show data clearly) -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES SECTION -->
+    <section id="features" class="py-24 bg-slate-50/50 border-t border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight mb-4">Designed for Efficiency</h2>
+                <p class="text-slate-500 text-lg">Whether you are an administrator managing finances or a student checking dues, we have tailored features for you.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="feature-card bg-white p-8 rounded-2xl reveal">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6 text-blue-600">
+                        <i data-lucide="shield-check" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Secure Admin Login</h3>
+                    <p class="text-slate-500 leading-relaxed">Encrypted authentication ensures that only authorized personnel can access sensitive financial data and student records.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-card bg-white p-8 rounded-2xl reveal">
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-6 text-orange-600">
+                        <i data-lucide="bar-chart-3" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Real-time Analytics</h3>
+                    <p class="text-slate-500 leading-relaxed">Visualize total fees collected, pending dues, and student enrollment statistics through an interactive dashboard.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card bg-white p-8 rounded-2xl reveal">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-6 text-green-600">
+                        <i data-lucide="file-spreadsheet" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Finance Export</h3>
+                    <p class="text-slate-500 leading-relaxed">Generate detailed reports and export financial data to CSV for offline processing and auditing.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="feature-card bg-white p-8 rounded-2xl reveal">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-6 text-purple-600">
+                        <i data-lucide="user-circle" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Student Profile</h3>
+                    <p class="text-slate-500 leading-relaxed">Students can view their complete profile including branch, year, and personal details in a clean interface.</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="feature-card bg-white p-8 rounded-2xl reveal">
+                    <div class="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center mb-6 text-pink-600">
+                        <i data-lucide="history" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Payment History</h3>
+                    <p class="text-slate-500 leading-relaxed">Track every transaction. Students can view past payments, dates, and receipt references instantly.</p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="feature-card bg-white p-8 rounded-2xl reveal">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-6 text-yellow-600">
+                        <i data-lucide="credit-card" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Fee Dues & Payments</h3>
+                    <p class="text-slate-500 leading-relaxed">Check outstanding balances and simulate payment flows for a seamless fee clearing experience.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TECH STACK & OVERVIEW -->
+    <section id="techstack" class="py-24 border-t border-slate-200 bg-white relative overflow-hidden">
+        <div class="absolute right-0 top-0 -mt-20 -mr-20 w-80 h-80 bg-slate-50 rounded-full blur-3xl opacity-50"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div class="reveal">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight mb-6">Built with Robust Technologies</h2>
+                <p class="text-slate-500 text-lg mb-8">
+                    The system leverages a classic WAMP stack architecture ensuring reliability, ease of deployment, and widespread compatibility.
+                </p>
+
+                <div class="space-y-6">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-xs">PHP</div>
+                        <div class="ml-4">
+                            <h4 class="text-lg font-semibold text-slate-900">Backend Logic</h4>
+                            <p class="text-slate-500 text-sm">Procedural PHP for server-side processing and secure data handling.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-xs">SQL</div>
+                        <div class="ml-4">
+                            <h4 class="text-lg font-semibold text-slate-900">Database</h4>
+                            <p class="text-slate-500 text-sm">MySQL relational database for structured storage of student and fee records.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-700 font-bold text-xs">BS5</div>
+                        <div class="ml-4">
+                            <h4 class="text-lg font-semibold text-slate-900">Frontend UI</h4>
+                            <p class="text-slate-500 text-sm">Bootstrap 5 providing the responsive grid system and modern components.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-900 rounded-2xl p-8 shadow-2xl text-slate-300 font-mono text-sm relative reveal delay-100">
+                <div class="absolute top-4 right-4 flex space-x-2">
+                    <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                </div>
+                <div class="mb-4 text-slate-500"># Project Configuration</div>
+                <p><span class="text-purple-400">const</span> <span class="text-blue-400">project</span> = {</p>
+                <p class="pl-4">name: <span class="text-green-400">"VIT Fee System"</span>,</p>
+                <p class="pl-4">version: <span class="text-orange-400">1.0.0</span>,</p>
+                <p class="pl-4">stack: [</p>
+                <p class="pl-8"><span class="text-green-400">"Apache (XAMPP)"</span>,</p>
+                <p class="pl-8"><span class="text-green-400">"PHP 8.0+"</span>,</p>
+                <p class="pl-8"><span class="text-green-400">"MySQL"</span>,</p>
+                <p class="pl-8"><span class="text-green-400">"Bootstrap 5"</span></p>
+                <p class="pl-4">],</p>
+                <p class="pl-4">author: <span class="text-green-400">"Contributor"</span></p>
+                <p>}</p>
+                <div class="mt-6 pt-6 border-t border-slate-700/50">
+                    <p class="text-slate-500">// Start Application</p>
+                    <p class="text-white">$ <span class="animate-pulse">npm run dev</span></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-50 border-t border-slate-200 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center mb-4">
+                        <div class="w-8 h-8 bg-slate-900 rounded-lg text-white flex items-center justify-center font-bold mr-3">V</div>
+                        <span class="font-bold text-xl text-slate-900">Vemana Institute Of Technology</span>
+                    </div>
+                    <p class="text-slate-500 text-sm leading-relaxed max-w-sm">
+                        Streamlining administrative excellence with secure, efficient, and transparent fee management solutions for the future of education.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-slate-900 mb-4">Platform</h3>
+                    <ul class="space-y-3 text-sm text-slate-500">
+                        <li><a href="http://localhost/fee_payemnt/student_login.php" class="hover:text-orange-600 transition-colors">Student Portal</a></li>
+                        <li><a href="#" class="hover:text-orange-600 transition-colors">Admin Dashboard</a></li>
+                        <li><a href="#" class="hover:text-orange-600 transition-colors">Fee Structure</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-slate-900 mb-4">Contact</h3>
+                    <ul class="space-y-3 text-sm text-slate-500">
+                        <li>support@vemanait.edu.in</li>
+                        <li>821811175</li>
+                        <li>Koramangala, Bengaluru</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-slate-200 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-slate-400 text-sm">© 2025 Vemana Institute Of Technology. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0 text-slate-400">
+                    <a href="#" class="hover:text-slate-900 transition-colors"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                    <a href="#" class="hover:text-slate-900 transition-colors"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                    <a href="#" class="hover:text-slate-900 transition-colors"><i data-lucide="facebook" class="w-5 h-5"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Mobile Menu Toggle
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Scroll Reveal Effect
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const revealOnScroll = () => {
+            const windowHeight = window.innerHeight;
+            const elementVisible = 100;
+
+            revealElements.forEach((reveal) => {
+                const elementTop = reveal.getBoundingClientRect().top;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveal.classList.add('active');
+                }
+            });
+        };
+
+        window.addEventListener('scroll', revealOnScroll);
+        // Trigger once on load
+        revealOnScroll();
+    </script>
+</body>
+</html>
